@@ -30,7 +30,6 @@ async function run() {
 
     app.post('/cars', async(req, res)=>{
         const cars = req.body;
-        console.log(cars);
         const result= await toyCollection.insertOne(cars);
         res.send(result)
 
@@ -55,6 +54,11 @@ async function run() {
         res.send(result)
     })
 
+    app.get('/userCas', async(req, res)=>{
+        const email = req.query.sellerEmail;
+        const result = await toyCollection.find({ sellerEmail: email }).toArray();
+        res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
