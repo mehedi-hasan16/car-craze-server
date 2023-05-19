@@ -27,12 +27,17 @@ async function run() {
 
 
     const toyCollection = client.db("toyCar").collection("cars");
+    const imageGallery = client.db("toyCar").collection("imageGallery");
 
     app.post('/cars', async(req, res)=>{
         const cars = req.body;
         const result= await toyCollection.insertOne(cars);
         res.send(result)
 
+    })
+    app.get('/images', async(req, res)=>{
+      const result = await imageGallery.find().toArray();
+      res.send(result)
     })
 
 
