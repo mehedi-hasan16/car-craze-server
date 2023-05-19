@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
-const port = process.env.PORT ||5000;
+const port = process.env.PORT || 5000;
 const app = express();
 
 app.use(cors());
@@ -30,83 +30,90 @@ async function run() {
     const imageGallery = client.db("toyCar").collection("imageGallery");
     const newInShop = client.db("toyCar").collection("newInShop");
 
-    app.post('/cars', async(req, res)=>{
-        const cars = req.body;
-        const result= await toyCollection.insertOne(cars);
-        res.send(result)
+    app.post('/cars', async (req, res) => {
+      const cars = req.body;
+      const result = await toyCollection.insertOne(cars);
+      res.send(result)
 
     })
 
-    app.get('/newinshop', async(req, res)=>{
+    app.get('/newinshop', async (req, res) => {
       const result = await newInShop.find().toArray()
       res.send(result)
     })
 
-    app.get('/images', async(req, res)=>{
+    app.get('/images', async (req, res) => {
       const result = await imageGallery.find().toArray();
       res.send(result)
     })
 
 
-    app.get('/cars', async(req, res)=>{
-        const result = await toyCollection.find().toArray();
-        res.send(result)
+    app.get('/cars', async (req, res) => {
+      const result = await toyCollection.find().toArray();
+      res.send(result)
     })
 
     //get data with limit 20
 
-    app.get('/carsLimit', async(req, res)=>{
+    app.get('/carsLimit', async (req, res) => {
       const result = await toyCollection.find().limit(20).toArray();
       res.send(result)
     })
-    
+
     app.get('/details/:id', async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await toyCollection.findOne(query)
-        res.send(result);
-      })
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.findOne(query)
+      res.send(result);
+    })
 
     app.get('/search', async (req, res) => {
-        const categoryName = req.query.category;
-        const result = await toyCollection.find({ category: categoryName }).toArray();
-        res.send(result)
+      const categoryName = req.query.category;
+      const result = await toyCollection.find({ category: categoryName }).toArray();
+      res.send(result)
+    })
+// get data with short and user email 
+    app.get('/userCas', async (req, res) => {
+      const email = req.query.sellerEmail;
+      const sort = req.query.sort;
+      let sortOrder = 1;
+      if (sort === 'descending') {
+        sortOrder = -1; //descending order
+      }
+      const result = await toyCollection.find({ sellerEmail: email }).sort({ price: sortOrder }).toArray();
+      res.send(result)
     })
 
-    app.get('/userCas', async(req, res)=>{
-        const email = req.query.sellerEmail;
-        const result = await toyCollection.find({ sellerEmail: email }).toArray();
-        res.send(result)
-    })
-
-    app.post('/search', async(req, res)=>{
+    //search by toy name
+    app.post('/search', async (req, res) => {
       const { toyName } = req.body;
-      console.log({toyName});
-        const result = await toyCollection.find({ toyName: { $regex: toyName, $options: 'i' } }).toArray();
-        res.send(result)
+      console.log({ toyName });
+      const result = await toyCollection.find({ toyName: { $regex: toyName, $options: 'i' } }).toArray();
+      res.send(result)
     })
+
 
     app.put('/cars/:id', async (req, res) => {
 
-        const id = req.params.id;
-        const filter = { _id: new ObjectId(id) }
-        const updateToyInfo = req.body;
-        const updateDoc = {
-          $set: {
-            price: updateToyInfo.price,
-            quantity: updateToyInfo.quantity,
-            description : updateToyInfo.description
-          }
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const updateToyInfo = req.body;
+      const updateDoc = {
+        $set: {
+          price: updateToyInfo.price,
+          quantity: updateToyInfo.quantity,
+          description: updateToyInfo.description
         }
-        const result = await toyCollection.updateOne(filter, updateDoc);
-        res.send(result)
+      }
+      const result = await toyCollection.updateOne(filter, updateDoc);
+      res.send(result)
     })
 
-    app.delete('/cars/:id', async(req, res)=>{
-        const id= req.params.id;
-        const query = { _id: new ObjectId(id)}
-        const result = await toyCollection.deleteOne(query);
-        res.send(result)
+    app.delete('/cars/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await toyCollection.deleteOne(query);
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
@@ -124,11 +131,11 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req, res)=>{
-    res.send('car-craze server is running')
+app.get('/', (req, res) => {
+  res.send('car-craze server is running')
 })
 
 
-app.listen(port, ()=>{
-    console.log(`car-craze server is running on port ${port}`);
+app.listen(port, () => {
+  console.log(`car-craze server is running on port ${port}`);
 })
