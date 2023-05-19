@@ -28,6 +28,7 @@ async function run() {
 
     const toyCollection = client.db("toyCar").collection("cars");
     const imageGallery = client.db("toyCar").collection("imageGallery");
+    const newInShop = client.db("toyCar").collection("newInShop");
 
     app.post('/cars', async(req, res)=>{
         const cars = req.body;
@@ -35,6 +36,12 @@ async function run() {
         res.send(result)
 
     })
+
+    app.get('/newinshop', async(req, res)=>{
+      const result = await newInShop.find().toArray()
+      res.send(result)
+    })
+
     app.get('/images', async(req, res)=>{
       const result = await imageGallery.find().toArray();
       res.send(result)
@@ -44,6 +51,13 @@ async function run() {
     app.get('/cars', async(req, res)=>{
         const result = await toyCollection.find().toArray();
         res.send(result)
+    })
+
+    //get data with limit 20
+
+    app.get('/carsLimit', async(req, res)=>{
+      const result = await toyCollection.find().limit(20).toArray();
+      res.send(result)
     })
     
     app.get('/details/:id', async (req, res) => {
@@ -62,6 +76,13 @@ async function run() {
     app.get('/userCas', async(req, res)=>{
         const email = req.query.sellerEmail;
         const result = await toyCollection.find({ sellerEmail: email }).toArray();
+        res.send(result)
+    })
+
+    app.post('/search', async(req, res)=>{
+      const { toyName } = req.body;
+      console.log({toyName});
+        const result = await toyCollection.find({ toyName: { $regex: toyName, $options: 'i' } }).toArray();
         res.send(result)
     })
 
