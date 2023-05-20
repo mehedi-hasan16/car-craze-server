@@ -29,6 +29,14 @@ async function run() {
     const toyCollection = client.db("toyCar").collection("cars");
     const imageGallery = client.db("toyCar").collection("imageGallery");
     const newInShop = client.db("toyCar").collection("newInShop");
+    const blogs = client.db("toyCar").collection("blogs");
+
+    // blogs data 
+    app.get('/blogs', async(req, res)=>{
+      const result= await blogs.find().toArray();
+      res.send(result)
+    })
+
 
     app.post('/cars', async (req, res) => {
       const cars = req.body;
@@ -125,10 +133,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
-
-
 
 
 app.get('/', (req, res) => {
